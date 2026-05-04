@@ -58,3 +58,5 @@ airflow/standalone_admin_password.txt
 .pytest_cache/
 .coverage
 htmlcov/
+state/
+logs/
