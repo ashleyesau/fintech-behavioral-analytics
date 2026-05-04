@@ -1,0 +1,60 @@
+# GCP Credentials (CRITICAL — never commit these)
+*-key.json
+*.json.key
+service-account*.json
+plaid-pipeline-sa-key.json
+application_default_credentials.json
+.gcp/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+.python-version
+
+# Jupyter
+.ipynb_checkpoints/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+profiles.yml
+
+# Airflow
+airflow/logs/
+airflow/airflow.db
+airflow/airflow.cfg
+airflow/standalone_admin_password.txt
+
+# macOS
+.DS_Store
+._*
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Logs & temp
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
