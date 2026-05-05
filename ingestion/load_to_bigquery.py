@@ -2,7 +2,7 @@ import argparse
 import json
 import logging
 import os
-from datetime import date
+from datetime import UTC, date, datetime
 
 from google.cloud import bigquery, storage
 
@@ -83,9 +83,6 @@ def flatten_transactions(raw, institution_id, ingestion_date):
     rows = raw.get("added", [])
     if not rows:
         log.warning(f"No 'added' transactions found for {institution_id} on {ingestion_date}.")
-    for row in rows:
-        row["institution_id"] = institution_id
-        row["ingestion_date"] = ingestion_date
     return rows
 
 
@@ -93,9 +90,6 @@ def flatten_accounts(raw, institution_id, ingestion_date):
     rows = raw.get("accounts", [])
     if not rows:
         log.warning(f"No accounts found for {institution_id} on {ingestion_date}.")
-    for row in rows:
-        row["institution_id"] = institution_id
-        row["ingestion_date"] = ingestion_date
     return rows
 
 
@@ -104,9 +98,17 @@ def flatten_balances(raw, institution_id, ingestion_date):
     rows = raw.get("accounts", [])
     if not rows:
         log.warning(f"No balances found for {institution_id} on {ingestion_date}.")
+    return rows
+
+
+def _add_metadata(rows, institution_id, ingestion_date, blob_name):
+    ingested_at = datetime.now(UTC).isoformat()
     for row in rows:
+        row["raw_json"] = json.dumps(row, default=str)
         row["institution_id"] = institution_id
         row["ingestion_date"] = ingestion_date
+        row["_ingested_at"] = ingested_at
+        row["_source_file"] = blob_name
     return rows
 
 
@@ -185,13 +187,15 @@ def main():
                 for blob in blobs:
                     log.info(f"Reading file: {blob.name}")
                     raw = download_blob(blob)
-                    rows.extend(flatten_transactions(raw, institution, run_date))
+                    file_rows = flatten_transactions(raw, institution, run_date)
+                    rows.extend(_add_metadata(file_rows, institution, run_date, blob.name))
             else:
                 # Accounts and balances are full snapshots -- use latest file only
                 blob = blobs[-1]
                 log.info(f"Found file: {blob.name}")
                 raw = download_blob(blob)
                 rows = FLATTEN_FN[data_type](raw, institution, run_date)
+                rows = _add_metadata(rows, institution, run_date, blob.name)
 
             log.info(f"Flattened {len(rows)} rows")
 
