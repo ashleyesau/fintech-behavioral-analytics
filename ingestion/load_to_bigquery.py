@@ -98,6 +98,14 @@ def flatten_balances(raw, institution_id, ingestion_date):
     rows = raw.get("accounts", [])
     if not rows:
         log.warning(f"No balances found for {institution_id} on {ingestion_date}.")
+    for row in rows:
+        # Plaid nests balance figures under a 'balances' sub-dict.
+        # Unpack into top-level columns to match the pre-provisioned schema.
+        balances = row.get("balances") or {}
+        row["balance_available"] = balances.get("available")
+        row["balance_current"] = balances.get("current")
+        row["balance_limit"] = balances.get("limit")
+        row["iso_currency_code"] = balances.get("iso_currency_code")
     return rows
 
 
