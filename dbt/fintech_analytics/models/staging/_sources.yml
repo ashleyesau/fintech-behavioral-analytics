@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: plaid
+    database: plaid-495309
+    schema: raw
+    description: Raw tables loaded from GCS Plaid API extracts.
+    tables:
+      - name: raw_transactions
+        description: >
+          One row per transaction per extraction run. Loaded from GCS JSON files
+          partitioned by institution and date. Includes both institution_a (Plaid
+          Sandbox) and institution_b (synthetic) data.
+      - name: raw_accounts
+        description: >
+          One row per account per extraction run. Full snapshot on every run.
+          12 accounts per institution.
+      - name: raw_balances
+        description: >
+          One row per account balance snapshot per extraction run. Real-time
+          balance data from Plaid at time of extraction.

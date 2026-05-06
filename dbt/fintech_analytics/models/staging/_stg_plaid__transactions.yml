@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: stg_plaid__transactions
+    description: >
+      Cleaned and standardised Plaid transactions. One row per transaction.
+      Pending transactions are excluded. Covers both institution_a (Plaid Sandbox)
+      and institution_b (synthetic). Positive amounts are debits (money leaving
+      the account); negative amounts are credits.
+    columns:
+      - name: transaction_id
+        description: Unique Plaid transaction identifier.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: account_id
+        description: Plaid account identifier. Foreign key to stg_plaid__accounts.
+        data_tests:
+          - not_null
+
+      - name: institution_id
+        description: Internal institution identifier (institution_a or institution_b).
+        data_tests:
+          - not_null
+
+      - name: amount
+        description: >
+          Transaction amount in the account currency. Positive values are debits
+          (money out). Negative values are credits (money in). Cast to NUMERIC
+          for precision.
+        data_tests:
+          - not_null
+
+      - name: is_debit
+        description: TRUE when amount is positive (money leaving the account).
+        data_tests:
+          - not_null
+
+      - name: transaction_date
+        description: Date the transaction posted.
+        data_tests:
+          - not_null
+
+      - name: transaction_type
+        description: Plaid transaction type. Either place or special.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['place', 'special']
+
+      - name: merchant_name
+        description: Normalised merchant name. Lowercased and whitespace-trimmed. Null for non-merchant transaction types.
+
+      - name: transaction_name
+        description: Plaid transaction name extracted from raw_json. Whitespace-trimmed.
+
+      - name: payment_channel
+        description: Payment channel reported by Plaid (e.g. in store, online, other).
+
+      - name: merchant_category_id
+        description: Plaid merchant category identifier.
+
+      - name: iso_currency_code
+        description: ISO 4217 currency code extracted from raw_json.
+
+      - name: authorized_date
+        description: Date the transaction was authorised, extracted from raw_json. May differ from transaction_date.
+
+      - name: ingestion_date
+        description: Partition date from the BigQuery raw table. Date the row was loaded.
+
+      - name: _ingested_at
+        description: Timestamp when the row was loaded into BigQuery by the ingestion pipeline.
+
+      - name: _source_file
+        description: GCS source file path this row was loaded from.
