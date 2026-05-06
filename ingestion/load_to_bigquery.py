@@ -20,6 +20,50 @@ BQ_TABLE_MAP = {
     "balances": "raw_balances",
 }
 
+BQ_SCHEMAS = {
+    "transactions": [
+        bigquery.SchemaField("transaction_id", "STRING"),
+        bigquery.SchemaField("account_id", "STRING"),
+        bigquery.SchemaField("institution_id", "STRING"),
+        bigquery.SchemaField("amount", "FLOAT64"),
+        bigquery.SchemaField("date", "DATE"),
+        bigquery.SchemaField("merchant_name", "STRING"),
+        bigquery.SchemaField("merchant_category_id", "STRING"),
+        bigquery.SchemaField("transaction_type", "STRING"),
+        bigquery.SchemaField("pending", "BOOL"),
+        bigquery.SchemaField("payment_channel", "STRING"),
+        bigquery.SchemaField("raw_json", "STRING"),
+        bigquery.SchemaField("ingestion_date", "DATE"),
+        bigquery.SchemaField("_ingested_at", "TIMESTAMP"),
+        bigquery.SchemaField("_source_file", "STRING"),
+    ],
+    "accounts": [
+        bigquery.SchemaField("account_id", "STRING"),
+        bigquery.SchemaField("institution_id", "STRING"),
+        bigquery.SchemaField("name", "STRING"),
+        bigquery.SchemaField("official_name", "STRING"),
+        bigquery.SchemaField("type", "STRING"),
+        bigquery.SchemaField("subtype", "STRING"),
+        bigquery.SchemaField("mask", "STRING"),
+        bigquery.SchemaField("raw_json", "STRING"),
+        bigquery.SchemaField("ingestion_date", "DATE"),
+        bigquery.SchemaField("_ingested_at", "TIMESTAMP"),
+        bigquery.SchemaField("_source_file", "STRING"),
+    ],
+    "balances": [
+        bigquery.SchemaField("account_id", "STRING"),
+        bigquery.SchemaField("institution_id", "STRING"),
+        bigquery.SchemaField("balance_available", "FLOAT64"),
+        bigquery.SchemaField("balance_current", "FLOAT64"),
+        bigquery.SchemaField("balance_limit", "FLOAT64"),
+        bigquery.SchemaField("iso_currency_code", "STRING"),
+        bigquery.SchemaField("raw_json", "STRING"),
+        bigquery.SchemaField("ingestion_date", "DATE"),
+        bigquery.SchemaField("_ingested_at", "TIMESTAMP"),
+        bigquery.SchemaField("_source_file", "STRING"),
+    ],
+}
+
 os.makedirs("logs", exist_ok=True)
 
 logging.basicConfig(
@@ -90,23 +134,34 @@ def flatten_accounts(raw, institution_id, ingestion_date):
     rows = raw.get("accounts", [])
     if not rows:
         log.warning(f"No accounts found for {institution_id} on {ingestion_date}.")
-    return rows
+    projected = []
+    for row in rows:
+        projected.append({
+            "account_id": row.get("account_id"),
+            "name": row.get("name"),
+            "official_name": row.get("official_name"),
+            "type": row.get("type"),
+            "subtype": row.get("subtype"),
+            "mask": str(row["mask"]) if row.get("mask") is not None else None,
+        })
+    return projected
 
 
 def flatten_balances(raw, institution_id, ingestion_date):
-    # Balances payload uses 'accounts' as the key, same as the accounts file
-    rows = raw.get("accounts", [])
-    if not rows:
-        log.warning(f"No balances found for {institution_id} on {ingestion_date}.")
-    for row in rows:
-        # Plaid nests balance figures under a 'balances' sub-dict.
-        # Unpack into top-level columns to match the pre-provisioned schema.
-        balances = row.get("balances") or {}
-        row["balance_available"] = balances.get("available")
-        row["balance_current"] = balances.get("current")
-        row["balance_limit"] = balances.get("limit")
-        row["iso_currency_code"] = balances.get("iso_currency_code")
-    return rows
+        rows = raw.get("accounts", [])
+        if not rows:
+            log.warning(f"No balances found for {institution_id} on {ingestion_date}.")
+        projected = []
+        for row in rows:
+            balances = row.get("balances") or {}
+            projected.append({
+                "account_id": row.get("account_id"),
+                "balance_available": balances.get("available"),
+                "balance_current": balances.get("current"),
+                "balance_limit": balances.get("limit"),
+                "iso_currency_code": balances.get("iso_currency_code"),
+            })
+        return projected
 
 
 def _add_metadata(rows, institution_id, ingestion_date, blob_name):
@@ -132,15 +187,14 @@ def load_rows(bq_client, rows, data_type, run_date):
         log.info(f"No rows to load for {data_type}. Skipping.")
         return 0
 
-    # Partition decorator scopes the write to this date's partition only
     date_nodash = run_date.replace("-", "")
     table_id = (
         f"{GCP_PROJECT}.{BQ_DATASET}.{BQ_TABLE_MAP[data_type]}${date_nodash}"
     )
 
     job_config = bigquery.LoadJobConfig(
-        write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
-        schema_update_options=[bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION],
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+        schema=BQ_SCHEMAS[data_type],
         ignore_unknown_values=True,
     )
 
