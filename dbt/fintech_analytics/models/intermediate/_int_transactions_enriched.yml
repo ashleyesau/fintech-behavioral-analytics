@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: int_transactions_enriched
+    description: >
+      Enriched transaction records built on top of stg_plaid__transactions.
+      Adds transaction_direction, merchant_category_normalised, and is_recurring.
+      Grain is one row per transaction, unchanged from staging.
+    columns:
+      - name: transaction_id
+        description: Unique Plaid transaction identifier.
+        tests:
+          - not_null
+          - unique
+
+      - name: transaction_direction
+        description: Debit or credit, derived from is_debit.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [debit, credit]
+
+      - name: merchant_category_normalised
+        description: >
+          Normalised spend category derived from merchant_name and transaction_name.
+          Buckets: income, transfer, groceries, dining, transport, utilities,
+          subscriptions, other.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [income, transfer, groceries, dining, transport, utilities, subscriptions, other]
+
+      - name: is_recurring
+        description: >
+          True if the transaction matches a known recurring merchant pattern
+          (subscriptions, utilities, rent, insurance, gym).
+        tests:
+          - not_null
