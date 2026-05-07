@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: mart_spending_behavior
+    description: >
+      Monthly spending behavior summary per account. Grain is one row per
+      account per month, anchored to the cashflow spine so zero-spend months
+      are included. Serves the Risk and Product teams.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+
+      - name: institution_id
+        description: Institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: month
+        description: First day of the month this row represents.
+        tests:
+          - not_null
+
+      - name: recurring_spend
+        description: Sum of debit amounts flagged as recurring this month.
+        tests:
+          - not_null
+
+      - name: discretionary_spend
+        description: Sum of debit amounts not flagged as recurring this month.
+        tests:
+          - not_null
+
+      - name: total_spend
+        description: Total debit spend this month.
+        tests:
+          - not_null
+
+      - name: recurring_spend_pct
+        description: Recurring spend as a proportion of total spend. Null when total spend is zero.
+
+      - name: unique_merchant_count
+        description: Number of distinct non-null merchant names transacted with this month.
+        tests:
+          - not_null
+
+      - name: top_merchant_1
+        description: Highest spend merchant by debit amount this month. Nullable.
+
+      - name: top_merchant_2
+        description: Second highest spend merchant this month. Nullable.
+
+      - name: top_merchant_3
+        description: Third highest spend merchant this month. Nullable.
+
+      - name: spend_spike_flag
+        description: >
+          True when total spend exceeds the account historical mean by more
+          than 2 standard deviations. False in months with insufficient
+          spend history to calculate a standard deviation.
+        tests:
+          - not_null
+
+    tests:
+      - unique:
+          column_name: "account_id || '-' || cast(month as string)"
