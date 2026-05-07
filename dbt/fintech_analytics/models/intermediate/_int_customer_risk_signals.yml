@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: int_customer_risk_signals
+    description: >
+      Account-level risk signals aggregated from monthly cashflow and transaction
+      history. Grain is one row per account. Feeds mart_risk_signals where the
+      headline finding lives.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+          - unique
+
+      - name: institution_id
+        description: Identifier for the institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: max_negative_cashflow_streak
+        description: >
+          Maximum number of consecutive months with negative net cashflow.
+          Calculated using a gaps-and-islands approach on int_account_monthly_cashflow.
+        tests:
+          - not_null
+
+      - name: merchant_concentration_ratio
+        description: >
+          Top 3 merchants by debit spend as a proportion of total merchant spend.
+          A value of 0.6 means the top 3 merchants account for 60 percent of spend.
+          Null merchant names are excluded from this calculation.
+        tests:
+          - not_null
+
+      - name: cashflow_volatility
+        description: >
+          Standard deviation of monthly net cashflow across the full data range.
+          Higher values indicate less predictable income and spending patterns.
+        tests:
+          - not_null
+
+      - name: combined_risk_flag
+        description: >
+          True when merchant_concentration_ratio >= 0.6 and
+          max_negative_cashflow_streak >= 2. Identifies accounts that show both
+          high spend concentration and sustained negative cashflow -- the
+          primary risk cohort for the headline finding.
+        tests:
+          - not_null
