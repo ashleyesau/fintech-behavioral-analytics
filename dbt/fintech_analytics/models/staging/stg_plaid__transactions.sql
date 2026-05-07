@@ -35,7 +35,7 @@ staged as (
 
     from source
 
-    where pending = false
+    where coalesce(pending, false) = false
 
 )
 

@@ -102,7 +102,6 @@ def find_data_blobs(storage_client, institution, data_type, run_date):
     prefix = f"raw/{data_type}/institution={institution}/date={run_date}/"
     blobs = list(storage_client.list_blobs(GCS_BUCKET, prefix=prefix))
 
-    # Exclude metadata sidecars -- they are named metadata_TIMESTAMP.json
     data_blobs = [
         b for b in blobs
         if not os.path.basename(b.name).startswith("metadata_")
@@ -114,7 +113,6 @@ def find_data_blobs(storage_client, institution, data_type, run_date):
             f"Run extract_transactions.py first."
         )
 
-    # Return sorted ascending so latest is last
     return sorted(data_blobs, key=lambda b: b.name)
 
 
@@ -148,20 +146,20 @@ def flatten_accounts(raw, institution_id, ingestion_date):
 
 
 def flatten_balances(raw, institution_id, ingestion_date):
-        rows = raw.get("accounts", [])
-        if not rows:
-            log.warning(f"No balances found for {institution_id} on {ingestion_date}.")
-        projected = []
-        for row in rows:
-            balances = row.get("balances") or {}
-            projected.append({
-                "account_id": row.get("account_id"),
-                "balance_available": balances.get("available"),
-                "balance_current": balances.get("current"),
-                "balance_limit": balances.get("limit"),
-                "iso_currency_code": balances.get("iso_currency_code"),
-            })
-        return projected
+    rows = raw.get("accounts", [])
+    if not rows:
+        log.warning(f"No balances found for {institution_id} on {ingestion_date}.")
+    projected = []
+    for row in rows:
+        balances = row.get("balances") or {}
+        projected.append({
+            "account_id": row.get("account_id"),
+            "balance_available": balances.get("available"),
+            "balance_current": balances.get("current"),
+            "balance_limit": balances.get("limit"),
+            "iso_currency_code": balances.get("iso_currency_code"),
+        })
+    return projected
 
 
 def _add_metadata(rows, institution_id, ingestion_date, blob_name):
@@ -235,16 +233,18 @@ def main():
     storage_client, bq_client = get_clients()
     results = []
 
-    for institution in INSTITUTIONS:
-        for data_type in DATA_TYPES:
+    # Outer loop is data_type so all institutions are accumulated before the
+    # single WRITE_TRUNCATE load. Looping institutions in the inner position
+    # previously caused each institution load to overwrite the prior one.
+    for data_type in DATA_TYPES:
+        all_rows = []
+
+        for institution in INSTITUTIONS:
             log.info(f"Processing {data_type} for {institution}")
 
             blobs = find_data_blobs(storage_client, institution, data_type, run_date)
 
             if data_type == "transactions":
-                # Concatenate added rows across all files for the date.
-                # Multiple extraction runs per day each produce a separate file
-                # with their slice of added transactions via cursor-based sync.
                 rows = []
                 for blob in blobs:
                     log.info(f"Reading file: {blob.name}")
@@ -252,27 +252,27 @@ def main():
                     file_rows = flatten_transactions(raw, institution, run_date)
                     rows.extend(_add_metadata(file_rows, institution, run_date, blob.name))
             else:
-                # Accounts and balances are full snapshots -- use latest file only
                 blob = blobs[-1]
                 log.info(f"Found file: {blob.name}")
                 raw = download_blob(blob)
                 rows = FLATTEN_FN[data_type](raw, institution, run_date)
                 rows = _add_metadata(rows, institution, run_date, blob.name)
 
-            log.info(f"Flattened {len(rows)} rows")
+            log.info(f"Flattened {len(rows)} rows for {institution}")
+            all_rows.extend(rows)
 
-            destination = f"{BQ_DATASET}.{BQ_TABLE_MAP[data_type]}"
-            rows_loaded = load_rows(bq_client, rows, data_type, run_date)
-            log.info(f"Loaded {rows_loaded} rows into {destination}")
+        destination = f"{BQ_DATASET}.{BQ_TABLE_MAP[data_type]}"
+        rows_loaded = load_rows(bq_client, all_rows, data_type, run_date)
+        log.info(f"Loaded {rows_loaded} rows into {destination}")
 
-            results.append(
-                {
-                    "institution": institution,
-                    "data_type": data_type,
-                    "rows_loaded": rows_loaded,
-                    "destination": destination,
-                }
-            )
+        results.append(
+            {
+                "institution": "institution_a + institution_b",
+                "data_type": data_type,
+                "rows_loaded": rows_loaded,
+                "destination": destination,
+            }
+        )
 
     _print_stage_summary(results)
     log.info("Load complete.")

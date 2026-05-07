@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: mart_risk_signals
+    description: >
+      Account-level risk signal summary. Grain is one row per account.
+      Combines all intermediate risk signals with the latest balance snapshot
+      and assigns a risk_tier. HIGH accounts are the headline finding cohort.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+          - unique
+
+      - name: institution_id
+        description: Institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: max_negative_cashflow_streak
+        description: Maximum consecutive months of negative net cashflow.
+        tests:
+          - not_null
+
+      - name: merchant_concentration_ratio
+        description: Top 3 merchants as a proportion of total debit spend.
+        tests:
+          - not_null
+
+      - name: cashflow_volatility
+        description: Standard deviation of monthly net cashflow.
+        tests:
+          - not_null
+
+      - name: combined_risk_flag
+        description: True when concentration >= 0.6 and streak >= 2.
+        tests:
+          - not_null
+
+      - name: risk_tier
+        description: HIGH where combined_risk_flag is true. MEDIUM where either condition alone is true. LOW otherwise.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [HIGH, MEDIUM, LOW]
+
+      - name: balance_current
+        description: Most recent current balance from stg_plaid__balances.
+
+      - name: balance_available
+        description: Most recent available balance. Nullable for credit and loan accounts.
+
+      - name: balance_limit
+        description: Credit limit. Null for non-credit accounts.
+
+      - name: balance_snapshot_date
+        description: Date of the most recent balance snapshot used.
