@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: mart_customer_financial_health
+    description: >
+      Monthly financial health summary per account. Grain is one row per
+      account per month. Adds cashflow trend direction and a savings rate
+      proxy on top of the intermediate cashflow model. Serves the Finance
+      and Product teams.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+
+      - name: institution_id
+        description: Institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: month
+        description: First day of the month this row represents.
+        tests:
+          - not_null
+
+      - name: total_debits
+        description: Sum of all debit amounts for the account in this month.
+        tests:
+          - not_null
+
+      - name: total_credits
+        description: Sum of all credit amounts for the account in this month.
+        tests:
+          - not_null
+
+      - name: net_cashflow
+        description: Credits minus debits. Negative means net outflow.
+        tests:
+          - not_null
+
+      - name: transaction_count
+        description: Total number of transactions in this month.
+        tests:
+          - not_null
+
+      - name: avg_net_cashflow_3m
+        description: Rolling 3-month average net cashflow including current month.
+
+      - name: savings_rate_proxy
+        description: >
+          Net cashflow divided by total credits. Approximates how much of
+          income is retained. Null when total_credits is zero.
+
+      - name: cashflow_trend_3m
+        description: >
+          IMPROVING when current month net cashflow exceeds 3-month average
+          by more than 10 percent. DECLINING when it falls more than 10 percent
+          below. STABLE otherwise.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [IMPROVING, STABLE, DECLINING]
+
+    tests:
+      - unique:
+          column_name: "account_id || '-' || cast(month as string)"
