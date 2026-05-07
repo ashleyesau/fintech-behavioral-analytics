@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: stg_plaid__accounts
+    description: >
+      Cleaned and renamed account records from the Plaid raw layer.
+      Grain is one row per account per ingestion_date snapshot.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+
+      - name: institution_id
+        description: Identifier for the institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: name
+        description: Account name as returned by Plaid, whitespace stripped.
+
+      - name: official_name
+        description: Official account name as returned by Plaid. Nullable.
+
+      - name: mask
+        description: Last four digits of the account number, kept as string.
+
+      - name: type
+        description: Account type, lowercased.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [depository, credit, loan, investment, other]
+
+      - name: subtype
+        description: Account subtype, lowercased. Nullable.
+
+      - name: ingestion_date
+        description: Date the raw data was ingested. Forms the snapshot grain with account_id.
+        tests:
+          - not_null
+
+      - name: _ingested_at
+        description: Timestamp when the row was written to BigQuery.
+
+      - name: _source_file
+        description: GCS source file path for lineage tracking.
+
+    tests:
+      - unique:
+          column_name: "account_id || '-' || cast(ingestion_date as string)"

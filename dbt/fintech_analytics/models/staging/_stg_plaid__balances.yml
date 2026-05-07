@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_plaid__balances
+    description: >
+      Cleaned and cast balance snapshots from the Plaid raw layer.
+      Grain is one row per account per snapshot_date.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+
+      - name: institution_id
+        description: Identifier for the institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: balance_current
+        description: Current balance at time of snapshot. Always populated.
+        tests:
+          - not_null
+
+      - name: balance_available
+        description: Available balance at time of snapshot. Nullable for credit and loan accounts.
+
+      - name: balance_limit
+        description: Credit limit for credit accounts. Null for non-credit accounts.
+
+      - name: iso_currency_code
+        description: ISO 4217 currency code for the balance amounts.
+
+      - name: snapshot_date
+        description: Date the balance snapshot was taken. Forms the grain with account_id.
+        tests:
+          - not_null
+
+      - name: _ingested_at
+        description: Timestamp when the row was written to BigQuery.
+
+      - name: _source_file
+        description: GCS source file path for lineage tracking.
+
+    tests:
+      - unique:
+          column_name: "account_id || '-' || cast(snapshot_date as string)"
