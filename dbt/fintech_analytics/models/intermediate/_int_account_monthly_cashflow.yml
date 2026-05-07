@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: int_account_monthly_cashflow
+    description: >
+      Monthly cashflow summary per account, built on a complete date spine.
+      Every account has one row per month in the data range, including months
+      with no transactions (zeroed out). Grain is one row per account per month.
+      Net cashflow is credits minus debits -- negative values indicate the account
+      spent more than it received that month.
+    columns:
+      - name: account_id
+        description: Unique Plaid account identifier.
+        tests:
+          - not_null
+
+      - name: institution_id
+        description: Identifier for the institution this account belongs to.
+        tests:
+          - not_null
+
+      - name: month
+        description: First day of the month this row represents.
+        tests:
+          - not_null
+
+      - name: total_debits
+        description: Sum of all debit transaction amounts for the account in this month.
+        tests:
+          - not_null
+
+      - name: total_credits
+        description: Sum of all credit transaction amounts for the account in this month.
+        tests:
+          - not_null
+
+      - name: net_cashflow
+        description: >
+          Credits minus debits for the month. Negative values indicate net outflow.
+          Used downstream to identify consecutive negative cashflow months.
+        tests:
+          - not_null
+
+      - name: transaction_count
+        description: Total number of transactions for the account in this month.
+        tests:
+          - not_null
+
+      - name: debit_count
+        description: Number of debit transactions for the account in this month.
+        tests:
+          - not_null
+
+      - name: credit_count
+        description: Number of credit transactions for the account in this month.
+        tests:
+          - not_null
+
+    tests:
+      - unique:
+          column_name: "account_id || '-' || cast(month as string)"
