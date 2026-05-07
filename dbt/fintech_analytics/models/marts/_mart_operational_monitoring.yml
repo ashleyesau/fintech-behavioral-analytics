@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: mart_operational_monitoring
+    description: >
+      Pipeline health monitoring per institution per ingestion date.
+      Tracks record counts, duplicate detection, balance completeness,
+      and data freshness. Serves the Data team. This model provides the
+      anomaly signal for the Velocity Anomaly Investigation scenario.
+    columns:
+      - name: institution_id
+        description: Institution identifier.
+        tests:
+          - not_null
+
+      - name: ingestion_date
+        description: Date the data was ingested into BigQuery.
+        tests:
+          - not_null
+
+      - name: records_loaded
+        description: Total transaction rows loaded for this institution on this date.
+        tests:
+          - not_null
+
+      - name: distinct_transaction_ids
+        description: Count of unique transaction_ids loaded on this date.
+        tests:
+          - not_null
+
+      - name: duplicate_transaction_count
+        description: >
+          Difference between records_loaded and distinct_transaction_ids.
+          A value above zero indicates duplicate transactions in this partition
+          and triggers the Velocity Anomaly Investigation scenario.
+        tests:
+          - not_null
+
+      - name: expected_records
+        description: Average daily transaction count for this institution across all loaded dates.
+
+      - name: completeness_pct
+        description: records_loaded as a percentage of expected_records.
+
+      - name: accounts_with_balances
+        description: Count of distinct accounts with a balance snapshot on this date.
+        tests:
+          - not_null
+
+      - name: has_duplicates
+        description: True when duplicate_transaction_count is greater than zero.
+        tests:
+          - not_null
+
+      - name: freshness_status
+        description: FRESH if ingestion_date is today. STALE if 1-7 days old. MISSING if older.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [FRESH, STALE, MISSING]
+
+    tests:
+      - unique:
+          column_name: "institution_id || '-' || cast(ingestion_date as string)"
