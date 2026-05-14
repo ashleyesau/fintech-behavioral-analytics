@@ -1,8 +1,16 @@
 # Fintech Behavioral Analytics Platform
 
+
+
 A full-stack analytics engineering project that simulates the internal data platform of a fintech company. It covers the entire stack: live API ingestion, cloud data warehousing, a layered dbt transformation model, data quality testing, and daily pipeline orchestration via Apache Airflow.
 
 The project was built to answer a question I kept coming back to while working through the modern data stack: what does it actually look like when all of these pieces connect? Not in a tutorial, where the data is already clean and the pipeline already works, but in practice, where things break in ways you did not anticipate and the debugging teaches you more than the building did.
+
+---
+## Repository
+
+[github.com/ashleyesau/fintech-behavioral-analytics](https://github.com/ashleyesau/fintech-behavioral-analytics)
+![dbt CI](https://github.com/ashleyesau/fintech-behavioral-analytics/actions/workflows/dbt_ci.yml/badge.svg)
 
 ---
 
@@ -328,7 +336,3 @@ A dashboard layer was scoped but ultimately dropped. Looker Studio is GUI-only w
 
 ---
 
-## Repository
-
-[github.com/ashleyesau/fintech-behavioral-analytics](https://github.com/ashleyesau/fintech-behavioral-analytics)
-![dbt CI](https://github.com/ashleyesau/fintech-behavioral-analytics/actions/workflows/dbt_ci.yml/badge.svg)
