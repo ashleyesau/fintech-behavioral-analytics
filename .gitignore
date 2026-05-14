@@ -60,3 +60,4 @@ airflow/standalone_admin_password.txt
 htmlcov/
 state/
 logs/
+dbt/fintech_analytics/target/
