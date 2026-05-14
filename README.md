@@ -331,3 +331,4 @@ A dashboard layer was scoped but ultimately dropped. Looker Studio is GUI-only w
 ## Repository
 
 [github.com/ashleyesau/fintech-behavioral-analytics](https://github.com/ashleyesau/fintech-behavioral-analytics)
+![dbt CI](https://github.com/ashleyesau/fintech-behavioral-analytics/actions/workflows/dbt_ci.yml/badge.svg)
