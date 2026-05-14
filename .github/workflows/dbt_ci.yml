@@ -1,0 +1,62 @@
+name: dbt CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt-bigquery
+        run: pip install dbt-bigquery==1.11.1
+
+      - name: Write GCP service account key
+        run: |
+          mkdir -p ~/.gcp
+          echo '${{ secrets.GCP_SA_KEY }}' > ~/.gcp/plaid-pipeline-sa-key.json
+
+      - name: Write dbt profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << 'PROFILE'
+          fintech_analytics:
+            target: dev
+            outputs:
+              dev:
+                type: bigquery
+                method: service-account
+                project: plaid-495309
+                dataset: staging
+                location: us-central1
+                keyfile: /home/runner/.gcp/plaid-pipeline-sa-key.json
+                threads: 4
+                timeout_seconds: 300
+          PROFILE
+
+      - name: dbt debug
+        working-directory: dbt/fintech_analytics
+        run: dbt debug --profiles-dir ~/.dbt
+
+      - name: dbt compile
+        working-directory: dbt/fintech_analytics
+        run: dbt compile --profiles-dir ~/.dbt
+
+      - name: dbt run
+        working-directory: dbt/fintech_analytics
+        run: dbt run --profiles-dir ~/.dbt
+
+      - name: dbt test
+        working-directory: dbt/fintech_analytics
+        run: dbt test --profiles-dir ~/.dbt
