@@ -2,7 +2,7 @@
 
 
 
-A full-stack analytics engineering project that simulates the internal data platform of a fintech company. It covers the entire stack: live API ingestion, cloud data warehousing, a layered dbt transformation model, data quality testing, and daily pipeline orchestration via Apache Airflow.
+A full-stack analytics engineering project that simulates the internal data platform of a fintech company. It covers the entire stack: live API ingestion, cloud data warehousing, a layered dbt transformation model, data quality testing, daily pipeline orchestration via Apache Airflow, and continuous integration via GitHub Actions.
 
 The project was built to answer a question I kept coming back to while working through the modern data stack: what does it actually look like when all of these pieces connect? Not in a tutorial, where the data is already clean and the pipeline already works, but in practice, where things break in ways you did not anticipate and the debugging teaches you more than the building did.
 
@@ -88,6 +88,9 @@ The synthetic seed script (`ingestion/seed_institution_b.py`) uses a fixed rando
 
 ```
 fintech-behavioral-analytics/
+|
+|-- .github/workflows/
+|   |-- dbt_ci.yml               # GitHub Actions: runs dbt tests on every push to main
 |
 |-- ingestion/
 |   |-- plaid_client.py          # Plaid API client factory with sandbox validation
