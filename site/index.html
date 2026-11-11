@@ -56,11 +56,12 @@
     .callout h3 { font: 1.25rem var(--serif); margin-bottom: 8px; }
     .callout p { color: var(--muted); font-size: .84rem; margin: 0; }
     .architecture { background: var(--paper-deep); }
-    .pipeline { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
-    .step { background: var(--white); border: 1px solid var(--line); padding: 20px; min-height: 130px; }
+    .pipeline { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; }
+    .step { position: relative; background: var(--white); border: 1px solid var(--line); padding: 20px; min-height: 130px; }
     .step span { color: var(--clay); font: .68rem ui-monospace, monospace; }
     .step h3 { font: 1.2rem var(--serif); margin: 10px 0 5px; }
     .step p { color: var(--muted); font-size: .76rem; margin: 0; }
+    .step:not(:last-child)::after { content: "→"; position: absolute; right: -21px; top: 50%; transform: translateY(-50%); color: var(--clay); font-size: 1.15rem; line-height: 1; z-index: 2; }
     .engineering { background: var(--white); }
     .engineering-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
     .engineering-card { padding: 23px; border: 1px solid var(--line); background: var(--paper); }
@@ -82,7 +83,9 @@
     @media (max-width: 760px) {
       .hero-grid,.overview-grid,.section-head { grid-template-columns: 1fr; gap: 25px; }
       .hero { padding: 65px 0; } .hero-art { min-height: 240px; }
-      .pipeline { grid-template-columns: repeat(2,1fr); }
+      .pipeline { grid-template-columns: repeat(2,1fr); gap: 24px; }
+      .step:nth-child(2n)::after { display: none; }
+      .step:not(:last-child)::after { right: -18px; }
     }
     @media (max-width: 560px) {
       .wrap { width: min(100% - 32px, var(--max)); }
