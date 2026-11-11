@@ -4,26 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f3f0e8">
-  <meta name="description" content="A full-stack fintech analytics engineering project exploring customer financial health and behavioural risk signals through a production-style data pipeline.">
+  <meta name="description" content="A fintech analytics engineering study by Ashley Esau, exploring customer financial health through a modern data pipeline.">
   <title>Fintech Behavioral Analytics | Ashley Esau</title>
   <style>
     :root {
-      --paper: #f3f0e8;
-      --paper-deep: #e9e4d8;
-      --ink: #292e27;
-      --muted: #707568;
-      --line: #d8d3c6;
-      --sage: #a5ad91;
-      --sage-dark: #667451;
-      --olive: #46533c;
-      --clay: #b87558;
-      --clay-light: #ead2c4;
-      --brown: #76624e;
-      --white: #fbfaf6;
+      --paper: #f3f0e8; --paper-deep: #e9e4d8; --ink: #292e27;
+      --muted: #707568; --line: #d8d3c6; --sage-dark: #667451;
+      --olive: #46533c; --clay: #b87558; --white: #fbfaf6;
       --serif: Georgia, "Times New Roman", serif;
       --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      --max: 1160px;
+      --max: 1000px;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -31,124 +21,76 @@
     a { color: inherit; }
     .wrap { width: min(var(--max), calc(100% - 48px)); margin-inline: auto; }
     .topbar { border-bottom: 1px solid var(--line); }
-    .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--olive); color: var(--paper); font-family: var(--serif); font-size: 1.1rem; font-weight: 400; }
-    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .brand-mark { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--olive); color: var(--paper); font: 1.1rem var(--serif); }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
     .nav-links a { text-decoration: none; color: var(--muted); font-size: .82rem; }
     .nav-links a:hover { color: var(--clay); }
-    .nav-cta { border: 1px solid var(--olive); padding: 9px 15px; border-radius: 2px; color: var(--olive) !important; }
-    .eyebrow { color: var(--sage-dark); text-transform: uppercase; letter-spacing: .16em; font-size: .69rem; font-weight: 750; }
-    .hero { padding: 94px 0 82px; position: relative; overflow: hidden; }
-    .hero:after { content: ""; position: absolute; width: 440px; height: 440px; border: 1px solid rgba(102,116,81,.2); border-radius: 50%; right: -120px; top: 20px; box-shadow: 0 0 0 38px rgba(102,116,81,.035), 0 0 0 82px rgba(102,116,81,.025); pointer-events: none; }
-    .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: 64px; position: relative; z-index: 1; }
+    .eyebrow { color: var(--sage-dark); text-transform: uppercase; letter-spacing: .15em; font-size: .68rem; font-weight: 750; }
+    .hero { padding: 92px 0 86px; }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: 54px; }
     h1,h2,h3,p { margin-top: 0; }
-    h1 { font: 400 clamp(3.3rem, 7vw, 6.4rem)/.99 var(--serif); letter-spacing: -.055em; max-width: 760px; margin: 20px 0 28px; }
+    h1 { font: 400 clamp(3.2rem, 7vw, 5.8rem)/1.02 var(--serif); letter-spacing: -.05em; margin: 18px 0 24px; }
     h1 em { color: var(--clay); font-weight: 400; }
-    .hero-copy { max-width: 620px; color: #62685d; font-size: 1.05rem; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-    .button { display: inline-flex; align-items: center; gap: 10px; padding: 13px 18px; border: 1px solid var(--olive); text-decoration: none; font-size: .82rem; font-weight: 650; transition: .2s ease; }
+    .hero-copy { max-width: 600px; color: #62685d; font-size: 1.05rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .button { display: inline-flex; padding: 12px 17px; border: 1px solid var(--olive); text-decoration: none; font-size: .82rem; font-weight: 650; }
     .button.primary { background: var(--olive); color: var(--white); }
-    .button.primary:hover { background: var(--sage-dark); }
     .button.secondary:hover { background: var(--paper-deep); }
-    .hero-note { border-left: 2px solid var(--clay); padding: 5px 0 5px 18px; margin-top: 36px; color: var(--muted); font-size: .78rem; max-width: 510px; }
-    .hero-art { min-height: 360px; display: grid; place-items: center; position: relative; }
-    .orbit { width: min(100%, 360px); aspect-ratio: 1; border: 1px solid #c7c9b8; border-radius: 50%; display: grid; place-items: center; position: relative; }
+    .hero-art { display: grid; place-items: center; min-height: 280px; }
+    .orbit { width: min(100%, 290px); aspect-ratio: 1; border: 1px solid #c7c9b8; border-radius: 50%; display: grid; place-items: center; position: relative; }
     .orbit:before,.orbit:after { content: ""; position: absolute; border: 1px solid #d6c8b7; border-radius: 50%; }
-    .orbit:before { inset: 35px; }
-    .orbit:after { inset: 75px; border-color: #c3c9b5; }
-    .orbit-core { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; text-align: center; background: var(--olive); color: var(--paper); font: 1.1rem/1.1 var(--serif); z-index: 1; box-shadow: 0 0 0 12px rgba(102,116,81,.1); }
-    .orbit-label { position: absolute; z-index: 2; background: var(--paper); padding: 5px 9px; color: var(--muted); font: .65rem var(--mono); letter-spacing: .04em; }
-    .ol-1 { top: 12%; left: 39%; } .ol-2 { right: -5%; top: 48%; } .ol-3 { bottom: 13%; left: 34%; } .ol-4 { left: -5%; top: 47%; }
-    .metrics { background: var(--olive); color: var(--paper); }
-    .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); }
-    .metric { padding: 27px 24px; border-right: 1px solid rgba(243,240,232,.2); }
-    .metric:first-child { padding-left: 0; } .metric:last-child { border: 0; }
-    .metric strong { display: block; font: 2.1rem var(--serif); font-weight: 400; }
-    .metric span { color: #c7cdbb; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; }
-    section { padding: 94px 0; }
-    .section-head { display: grid; grid-template-columns: .65fr 1.35fr; gap: 40px; margin-bottom: 46px; align-items: start; }
-    .section-head h2 { font: 400 clamp(2.35rem,4vw,3.65rem)/1.08 var(--serif); letter-spacing: -.04em; margin: 8px 0 0; }
-    .section-head p { color: var(--muted); max-width: 650px; margin: 10px 0 0; }
+    .orbit:before { inset: 28px; } .orbit:after { inset: 62px; border-color: #c3c9b5; }
+    .orbit-core { width: 100px; height: 100px; border-radius: 50%; display: grid; place-items: center; text-align: center; background: var(--olive); color: var(--paper); font: 1rem/1.1 var(--serif); z-index: 1; }
+    .orbit-label { position: absolute; z-index: 2; background: var(--paper); padding: 4px 8px; color: var(--muted); font: .62rem ui-monospace, monospace; }
+    .ol-1 { top: 10%; left: 39%; } .ol-2 { right: -4%; top: 48%; } .ol-3 { bottom: 10%; left: 38%; } .ol-4 { left: -7%; top: 48%; }
+    section { padding: 72px 0; }
+    .section-head { display: grid; grid-template-columns: .55fr 1.45fr; gap: 34px; margin-bottom: 34px; align-items: start; }
+    .section-head h2 { font: 400 clamp(2.1rem,4vw,3.2rem)/1.1 var(--serif); letter-spacing: -.04em; margin: 5px 0 10px; }
+    .section-head p,.body-copy { color: var(--muted); max-width: 680px; margin-bottom: 0; }
     .overview { background: var(--white); }
-    .overview-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 70px; }
-    .lead { font: 1.55rem/1.4 var(--serif); max-width: 700px; }
-    .body-copy { color: var(--muted); max-width: 700px; }
-    .callout { background: var(--paper); padding: 28px; border-top: 3px solid var(--clay); }
-    .callout h3 { font: 1.35rem var(--serif); margin-bottom: 10px; }
-    .callout p { color: var(--muted); font-size: .88rem; margin-bottom: 0; }
-    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
-    .tag { padding: 6px 10px; border: 1px solid var(--line); color: var(--muted); font: .68rem var(--mono); }
+    .overview-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 50px; }
+    .lead { font: 1.45rem/1.4 var(--serif); }
+    .callout { background: var(--paper); padding: 24px; border-top: 3px solid var(--clay); }
+    .callout h3 { font: 1.25rem var(--serif); margin-bottom: 8px; }
+    .callout p { color: var(--muted); font-size: .84rem; margin: 0; }
     .architecture { background: var(--paper-deep); }
-    .arch-flow { display: grid; grid-template-columns: repeat(7,1fr); gap: 10px; align-items: stretch; }
-    .arch-node { background: var(--white); border: 1px solid var(--line); padding: 17px 13px; min-height: 140px; position: relative; }
-    .arch-node:not(:last-child):after { content: "→"; position: absolute; right: -13px; top: 50%; transform: translate(50%,-50%); color: var(--clay); z-index: 2; font-size: 1.15rem; }
-    .arch-node .num { color: var(--clay); font: .7rem var(--mono); }
-    .arch-node h3 { font: 1.08rem var(--serif); margin: 13px 0 7px; }
-    .arch-node p { font-size: .7rem; color: var(--muted); line-height: 1.5; margin: 0; }
-    .arch-caption { margin-top: 22px; color: var(--muted); font-size: .78rem; }
-    .layers { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 40px; }
-    .layer-card { padding: 24px; background: rgba(255,255,255,.52); border: 1px solid var(--line); }
-    .layer-card .layer-id { font: .68rem var(--mono); color: var(--clay); }
-    .layer-card h3 { font: 1.45rem var(--serif); margin: 12px 0 8px; }
-    .layer-card p { color: var(--muted); font-size: .83rem; margin: 0; }
-    .stack { background: var(--white); }
-    .stack-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-    .stack-item { background: var(--white); padding: 23px; min-height: 130px; }
-    .stack-item span { display: block; color: var(--sage-dark); font: .67rem var(--mono); text-transform: uppercase; margin-bottom: 14px; }
-    .stack-item strong { font: 1.25rem var(--serif); font-weight: 400; }
-    .stack-item small { display: block; color: var(--muted); font-size: .73rem; margin-top: 5px; }
-    .engineering { background: var(--paper); }
-    .engineering-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
-    .engineering-card { padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.42); }
-    .engineering-card .index { font: .7rem var(--mono); color: var(--clay); }
-    .engineering-card h3 { font: 1.4rem var(--serif); margin: 14px 0 10px; }
-    .engineering-card p { color: var(--muted); font-size: .85rem; margin: 0; }
-    .quality { background: var(--olive); color: var(--paper); }
-    .quality .eyebrow { color: #c5cdae; }
-    .quality .section-head p { color: #c5cbbd; }
-    .quality-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
-    .quality-card { padding: 24px; border: 1px solid rgba(243,240,232,.22); }
-    .quality-card span { color: #d49a7f; font: .7rem var(--mono); }
-    .quality-card h3 { font: 1.35rem var(--serif); margin: 12px 0 9px; }
-    .quality-card p { color: #c5cbbd; font-size: .82rem; margin: 0; }
-    .quality-foot { margin-top: 25px; color: #c5cbbd; font-size: .78rem; }
+    .pipeline { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .step { background: var(--white); border: 1px solid var(--line); padding: 20px; min-height: 130px; }
+    .step span { color: var(--clay); font: .68rem ui-monospace, monospace; }
+    .step h3 { font: 1.2rem var(--serif); margin: 10px 0 5px; }
+    .step p { color: var(--muted); font-size: .76rem; margin: 0; }
+    .engineering { background: var(--white); }
+    .engineering-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+    .engineering-card { padding: 23px; border: 1px solid var(--line); background: var(--paper); }
+    .engineering-card h3 { font: 1.3rem var(--serif); margin: 9px 0; }
+    .engineering-card p { color: var(--muted); font-size: .84rem; margin: 0; }
+    .tools { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+    .tool { border: 1px solid var(--line); padding: 7px 11px; color: var(--muted); font-size: .76rem; }
     .limits { background: var(--paper-deep); }
-    .limits-box { display: grid; grid-template-columns: .7fr 1.3fr; gap: 50px; padding: 35px; border: 1px solid var(--line); background: rgba(255,255,255,.38); }
-    .limits-box h3 { font: 1.7rem var(--serif); margin: 0; }
-    .limits-box p { color: var(--muted); font-size: .86rem; margin: 0; }
-    .footer { background: #252b24; color: var(--paper); padding: 60px 0 28px; }
-    .footer-main { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding-bottom: 42px; }
-    .footer h2 { font: 400 clamp(2.4rem,5vw,4rem)/1 var(--serif); margin: 12px 0; letter-spacing: -.04em; }
-    .footer p { color: #bfc5b6; font-size: .84rem; max-width: 480px; }
+    .limits-box { padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.4); }
+    .limits-box p { color: var(--muted); margin: 0; }
+    .footer { background: #252b24; color: var(--paper); padding: 48px 0 24px; }
+    .footer-main { display: flex; align-items: end; justify-content: space-between; gap: 25px; padding-bottom: 32px; }
+    .footer h2 { font: 400 clamp(2.2rem,5vw,3.5rem)/1.05 var(--serif); margin: 10px 0; }
+    .footer p { color: #bfc5b6; font-size: .84rem; max-width: 440px; }
     .footer .eyebrow { color: #c5cdae; }
-    .footer-links { display: flex; flex-wrap: wrap; gap: 10px; }
-    .footer-links a { color: var(--paper); border: 1px solid #68715f; padding: 12px 16px; text-decoration: none; font-size: .8rem; }
-    .footer-links a:hover { background: var(--olive); }
-    .fineprint { border-top: 1px solid #485044; padding-top: 20px; display: flex; justify-content: space-between; gap: 15px; color: #9fa797; font-size: .7rem; }
-    @media (max-width: 900px) {
-      .hero-grid,.overview-grid,.section-head,.limits-box { grid-template-columns: 1fr; gap: 30px; }
-      .hero { padding: 70px 0; } .hero-art { min-height: 290px; }
-      .arch-flow { grid-template-columns: repeat(4,1fr); }
-      .arch-node:nth-child(4):after { display:none; }
-      .stack-grid { grid-template-columns: repeat(2,1fr); }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 9px; }
+    .footer-links a { color: var(--paper); border: 1px solid #68715f; padding: 10px 14px; text-decoration: none; font-size: .8rem; }
+    .fineprint { border-top: 1px solid #485044; padding-top: 17px; color: #9fa797; font-size: .7rem; }
+    @media (max-width: 760px) {
+      .hero-grid,.overview-grid,.section-head { grid-template-columns: 1fr; gap: 25px; }
+      .hero { padding: 65px 0; } .hero-art { min-height: 240px; }
+      .pipeline { grid-template-columns: repeat(2,1fr); }
     }
-    @media (max-width: 620px) {
+    @media (max-width: 560px) {
       .wrap { width: min(100% - 32px, var(--max)); }
-      .nav { min-height: 65px; } .nav-links { gap: 12px; } .nav-links a:not(.nav-cta) { display:none; }
-      .hero { padding: 60px 0 52px; } .hero:after { right:-280px; }
-      h1 { font-size: clamp(3.1rem,15vw,4.7rem); }
-      .hero-art { min-height: 250px; } .orbit { width: 245px; }
-      .metric-grid { grid-template-columns: repeat(2,1fr); }
-      .metric { padding: 18px 12px; border-bottom: 1px solid rgba(243,240,232,.2); }
-      .metric:first-child { padding-left: 12px; } .metric:nth-child(2) { border-right:0; }
-      section { padding: 68px 0; }
-      .arch-flow { grid-template-columns: repeat(2,1fr); }
-      .arch-node:nth-child(even):after { display:none; }
-      .layers,.quality-grid,.engineering-grid { grid-template-columns: 1fr; }
-      .stack-grid { grid-template-columns: repeat(2,1fr); }
-      .stack-item { padding: 16px; min-height: 118px; }
-      .footer-main,.fineprint { align-items: flex-start; flex-direction: column; }
+      .nav { min-height: 62px; } .nav-links { gap: 12px; } .nav-links a:not(.nav-cta) { display:none; }
+      h1 { font-size: clamp(3rem,14vw,4.4rem); }
+      section { padding: 56px 0; }
+      .engineering-grid { grid-template-columns: 1fr; }
+      .footer-main { align-items: flex-start; flex-direction: column; }
     }
   </style>
 </head>
@@ -157,8 +99,10 @@
     <div class="wrap nav">
       <a class="brand" href="#top"><span class="brand-mark">A</span><span>Project study · 01</span></a>
       <nav class="nav-links" aria-label="Main navigation">
-        <a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#engineering">Engineering</a>
-        <a class="nav-cta" href="https://github.com/ashleyesau/fintech-behavioral-analytics" target="_blank" rel="noreferrer">View repository ↗</a>
+        <a href="#overview">Overview</a>
+        <a href="#architecture">Pipeline</a>
+        <a href="#engineering">Engineering</a>
+        <a class="nav-cta" href="https://github.com/ashleyesau/fintech-behavioral-analytics" target="_blank" rel="noreferrer">GitHub ↗</a>
       </nav>
     </div>
   </header>
@@ -167,49 +111,38 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <div class="eyebrow">Analytics engineering · End-to-end data platform</div>
+          <div class="eyebrow">Analytics engineering · Fintech</div>
           <h1>Understanding the signals behind <em>financial health.</em></h1>
-          <p class="hero-copy">A full-stack fintech analytics platform built to explore how transaction behaviour can reveal early signs of customer financial stress, from API ingestion to tested, decision-ready data marts.</p>
+          <p class="hero-copy">An end-to-end data engineering study exploring how transaction behaviour can help identify patterns linked to customer financial stress.</p>
           <div class="actions">
-            <a class="button primary" href="#architecture">Explore the platform <span>↓</span></a>
-            <a class="button secondary" href="https://github.com/ashleyesau/fintech-behavioral-analytics" target="_blank" rel="noreferrer">Explore the code ↗</a>
+            <a class="button primary" href="#overview">Explore the project ↓</a>
+            <a class="button secondary" href="https://github.com/ashleyesau/fintech-behavioral-analytics" target="_blank" rel="noreferrer">View source code ↗</a>
           </div>
-          <p class="hero-note">A practical study in connecting the modern data stack, including the debugging, trade-offs and design decisions that make a pipeline dependable.</p>
         </div>
-        <div class="hero-art" aria-label="Abstract concentric data system illustration">
+        <div class="hero-art" aria-hidden="true">
           <div class="orbit">
             <span class="orbit-label ol-1">SOURCE</span><span class="orbit-label ol-2">TRANSFORM</span>
-            <span class="orbit-label ol-3">INSIGHT</span><span class="orbit-label ol-4">ORCHESTRATE</span>
+            <span class="orbit-label ol-3">INSIGHT</span><span class="orbit-label ol-4">DELIVER</span>
             <div class="orbit-core">Financial<br>behaviour</div>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="metrics">
-      <div class="wrap metric-grid">
-        <div class="metric"><strong>10</strong><span>dbt models</span></div>
-        <div class="metric"><strong>81</strong><span>Passing data tests</span></div>
-        <div class="metric"><strong>7</strong><span>Orchestrated tasks</span></div>
-        <div class="metric"><strong>2</strong><span>Institution profiles</span></div>
-      </div>
-    </div>
-
     <section class="overview" id="overview">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">01 / The question</div>
-          <div><h2>Can transaction patterns reveal risk before a balance event?</h2><p>The project simulates the analytics infrastructure of a fintech business tracking customer financial health across two institution profiles.</p></div>
+          <div class="eyebrow">01 / The project</div>
+          <div><h2>Turning transaction data into useful signals.</h2><p>The project simulates a fintech analytics platform using synthetic data from two Plaid Sandbox institution profiles.</p></div>
         </div>
         <div class="overview-grid">
           <div>
-            <p class="lead">The central hypothesis: customers with concentrated spending and repeated negative monthly cash flow may have both inflexible spending patterns and deteriorating financial buffers.</p>
-            <p class="body-copy">The analytical output is a risk-signals mart that brings these behavioural indicators together. The platform demonstrates how source data can be ingested, modelled, tested and delivered for downstream decision-making.</p>
-            <div class="tag-row"><span class="tag">Customer financial health</span><span class="tag">Merchant concentration</span><span class="tag">Cash-flow trends</span><span class="tag">Risk signals</span></div>
+            <p class="lead">The goal is to build a dependable data pipeline that transforms raw financial activity into clear, testable behavioural indicators.</p>
+            <p class="body-copy">The analytical focus includes merchant spending concentration, monthly cash flow and repeated negative cash-flow periods. These indicators are brought together in downstream data models for further analysis.</p>
           </div>
           <aside class="callout">
-            <h3>Designed with data honesty</h3>
-            <p>Plaid Sandbox data is synthetic and does not support real-world predictive conclusions. The project focuses on the correctness of the engineering pipeline and the logic of the analytical models, not on claiming validated customer-risk predictions.</p>
+            <h3>Important context</h3>
+            <p>Plaid Sandbox data is synthetic. The project demonstrates data engineering and modelling practices, not validated predictions about real customers.</p>
           </aside>
         </div>
       </div>
@@ -218,42 +151,14 @@
     <section class="architecture" id="architecture">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">02 / The architecture</div>
-          <div><h2>One connected path from source to insight.</h2><p>Each layer has a defined responsibility. Data moves forward through the platform, with transformations and quality checks applied before it reaches analytical marts.</p></div>
+          <div class="eyebrow">02 / The pipeline</div>
+          <div><h2>From API to analytical models.</h2><p>A straightforward view of how data moves through the platform.</p></div>
         </div>
-        <div class="arch-flow" aria-label="Pipeline architecture">
-          <article class="arch-node"><span class="num">01 / SOURCE</span><h3>Plaid API</h3><p>Sandbox data from two institution profiles</p></article>
-          <article class="arch-node"><span class="num">02 / EXTRACT</span><h3>Python</h3><p>Cursor-based sync, account and balance extraction</p></article>
-          <article class="arch-node"><span class="num">03 / STORE</span><h3>Cloud Storage</h3><p>Partitioned raw JSON files</p></article>
-          <article class="arch-node"><span class="num">04 / WAREHOUSE</span><h3>BigQuery</h3><p>Raw landing tables</p></article>
-          <article class="arch-node"><span class="num">05 / MODEL</span><h3>dbt</h3><p>Staging, intermediate and mart layers</p></article>
-          <article class="arch-node"><span class="num">06 / CONTROL</span><h3>Airflow</h3><p>Daily orchestration and quality gates</p></article>
-          <article class="arch-node"><span class="num">07 / DELIVER</span><h3>Data marts</h3><p>Risk, finance, product and data teams</p></article>
-        </div>
-        <p class="arch-caption">Conceptual flow of the platform. Airflow orchestrates the extraction, loading, transformation and testing steps; it is not a separate downstream data layer.</p>
-        <div class="layers">
-          <article class="layer-card"><span class="layer-id">LAYER 01 · SILVER</span><h3>Staging</h3><p>Clean, cast and standardise raw Plaid records. Handle nulls and source-specific behaviour at the point where data enters the transformation graph.</p></article>
-          <article class="layer-card"><span class="layer-id">LAYER 02 · BUSINESS LOGIC</span><h3>Intermediate</h3><p>Enrich transactions, build monthly cash-flow series and calculate behavioural risk indicators using aggregation and window logic.</p></article>
-          <article class="layer-card"><span class="layer-id">LAYER 03 · GOLD</span><h3>Marts</h3><p>Publish stakeholder-oriented outputs for risk, finance, product and operational monitoring.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="stack">
-      <div class="wrap">
-        <div class="section-head">
-          <div class="eyebrow">03 / The toolkit</div>
-          <div><h2>Built with the modern data stack.</h2><p>Tools were selected to demonstrate the full lifecycle: extraction, cloud storage, warehousing, transformation, orchestration and continuous integration.</p></div>
-        </div>
-        <div class="stack-grid">
-          <div class="stack-item"><span>API source</span><strong>Plaid Sandbox</strong><small>Financial transaction data</small></div>
-          <div class="stack-item"><span>Ingestion</span><strong>Python</strong><small>Extraction and loading scripts</small></div>
-          <div class="stack-item"><span>Object storage</span><strong>Google Cloud Storage</strong><small>Raw JSON landing zone</small></div>
-          <div class="stack-item"><span>Warehouse</span><strong>BigQuery</strong><small>Cloud analytical storage</small></div>
-          <div class="stack-item"><span>Transformation</span><strong>dbt</strong><small>10 models across 3 layers</small></div>
-          <div class="stack-item"><span>Orchestration</span><strong>Apache Airflow</strong><small>LocalExecutor · Docker Compose</small></div>
-          <div class="stack-item"><span>Runtime</span><strong>Docker</strong><small>Containerised local environment</small></div>
-          <div class="stack-item"><span>CI</span><strong>GitHub Actions</strong><small>Automated dbt validation</small></div>
+        <div class="pipeline">
+          <article class="step"><span>01 / EXTRACT</span><h3>Plaid API + Python</h3><p>Retrieve transaction, account and balance data.</p></article>
+          <article class="step"><span>02 / STORE</span><h3>Cloud Storage</h3><p>Save raw records as JSON files.</p></article>
+          <article class="step"><span>03 / TRANSFORM</span><h3>BigQuery + dbt</h3><p>Clean, enrich and model the data.</p></article>
+          <article class="step"><span>04 / ORCHESTRATE</span><h3>Airflow</h3><p>Coordinate pipeline tasks and quality checks.</p></article>
         </div>
       </div>
     </section>
@@ -261,42 +166,31 @@
     <section class="engineering" id="engineering">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">04 / Engineering details</div>
-          <div><h2>The important work is in the decisions.</h2><p>The platform documents practical engineering choices made to preserve data integrity, keep the model graph understandable and make orchestration reliable.</p></div>
+          <div class="eyebrow">03 / Engineering</div>
+          <div><h2>Key decisions and lessons.</h2><p>The work focused on data reliability, clear model logic and understanding how each part of the pipeline behaves.</p></div>
         </div>
         <div class="engineering-grid">
-          <article class="engineering-card"><span class="index">01 - INGESTION</span><h3>Cursor-based synchronisation</h3><p>Transactions use Plaid's cursor-based sync approach. The cursor advances only after a successful GCS write, so a failed write can be retried from the last known good position.</p></article>
-          <article class="engineering-card"><span class="index">02 - DATA MODELLING</span><h3>A complete monthly spine</h3><p>A generated account-month spine preserves months with zero transactions. This matters when calculating consecutive negative cash-flow periods without treating missing activity as a missing month.</p></article>
-          <article class="engineering-card"><span class="index">03 - QUALITY</span><h3>Staging as the control point</h3><p>Type casting, null handling, field naming and source filters are handled in staging so downstream models inherit consistent, trusted inputs.</p></article>
-          <article class="engineering-card"><span class="index">04 - ORCHESTRATION</span><h3>Quality gates in Airflow</h3><p>Staging tests run before intermediate models. If the quality gate fails, downstream transformation tasks do not proceed on untrusted data.</p></article>
+          <article class="engineering-card"><span class="eyebrow">Data ingestion</span><h3>Reliable cursor-based sync</h3><p>Advance the Plaid cursor only after data is successfully written, allowing ingestion to resume from the last successful position.</p></article>
+          <article class="engineering-card"><span class="eyebrow">Data modelling</span><h3>Preserving inactive months</h3><p>Build an account-month spine so months with no transactions remain visible in cash-flow analysis.</p></article>
+          <article class="engineering-card"><span class="eyebrow">Data quality</span><h3>Consistent staging models</h3><p>Standardise types, null handling and source fields before applying downstream business logic.</p></article>
+          <article class="engineering-card"><span class="eyebrow">Debugging</span><h3>Investigating unexpected results</h3><p>Resolve issues involving partition overwrites, SQL NULL handling and ambiguous column references.</p></article>
         </div>
-      </div>
-    </section>
-
-    <section class="quality">
-      <div class="wrap">
-        <div class="section-head">
-          <div class="eyebrow">05 / Learning through debugging</div>
-          <div><h2>Three subtle bugs. Three important lessons.</h2><p>Some of the most valuable work came from investigating results that looked plausible but were incomplete or incorrect.</p></div>
+        <div class="tools" aria-label="Technology stack">
+          <span class="tool">Python</span><span class="tool">Plaid Sandbox</span><span class="tool">Google Cloud Storage</span>
+          <span class="tool">BigQuery</span><span class="tool">dbt</span><span class="tool">Apache Airflow</span>
+          <span class="tool">Docker</span><span class="tool">GitHub Actions</span>
         </div>
-        <div class="quality-grid">
-          <article class="quality-card"><span>DATA LOADING</span><h3>Partition overwrites</h3><p>Sequential WRITE_TRUNCATE operations were replacing previously loaded institution data. The loading order was redesigned so each partition write contained all relevant institutions.</p></article>
-          <article class="quality-card"><span>SQL NULL HANDLING</span><h3>Silent row loss</h3><p>A pending-transaction filter excluded records where the source returned NULL. Explicit COALESCE handling preserved non-pending rows.</p></article>
-          <article class="quality-card"><span>BIGQUERY NAME RESOLUTION</span><h3>Ambiguous identifiers</h3><p>A CTE and a column shared a name, leading BigQuery to resolve an ORDER BY reference unexpectedly. Clear naming removed the ambiguity.</p></article>
-        </div>
-        <p class="quality-foot">The project README documents the investigations, fixes and wider design decisions in more detail.</p>
       </div>
     </section>
 
     <section class="limits">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">06 / Scope & limitations</div>
-          <div><h2>A complete pipeline, with clear boundaries.</h2><p>The project deliberately prioritised a tested engineering foundation over adding a superficial dashboard layer.</p></div>
+          <div class="eyebrow">04 / Scope</div>
+          <div><h2>A focused engineering study.</h2><p>The emphasis is on the data pipeline and analytical foundations.</p></div>
         </div>
         <div class="limits-box">
-          <h3>What this project does, and does not, claim.</h3>
-          <p>The dataset is synthetic Plaid Sandbox data, so the resulting risk signals are not validated predictions about real customers. The platform demonstrates a working ingestion-to-mart workflow and the engineering patterns behind it. A live dashboard, production-grade access controls and centralised cursor persistence are documented as future or out-of-scope work.</p>
+          <p>The project uses synthetic Sandbox data and does not claim real-world predictive accuracy. A live dashboard, production-grade access controls and centralised cursor persistence are outside the current scope.</p>
         </div>
       </div>
     </section>
@@ -305,13 +199,13 @@
   <footer class="footer">
     <div class="wrap">
       <div class="footer-main">
-        <div><div class="eyebrow">A project by Ashley Esau</div><h2>From raw data<br>to considered insight.</h2><p>Explore the repository for the full implementation, model inventory, setup instructions and technical decisions behind this platform.</p></div>
+        <div><div class="eyebrow">A project by Ashley Esau</div><h2>From raw data<br>to considered insight.</h2><p>Explore the repository for the implementation, model details and technical decisions behind the project.</p></div>
         <div class="footer-links">
           <a href="https://github.com/ashleyesau/fintech-behavioral-analytics" target="_blank" rel="noreferrer">GitHub repository ↗</a>
           <a href="https://github.com/ashleyesau" target="_blank" rel="noreferrer">GitHub profile ↗</a>
         </div>
       </div>
-      <div class="fineprint"><span>Fintech Behavioral Analytics Platform</span><span>Designed in an earth-tone palette · Hosted with GitHub Pages</span></div>
+      <div class="fineprint">Fintech Behavioral Analytics · Designed in an earth-tone palette · Hosted with GitHub Pages</div>
     </div>
   </footer>
 </body>
