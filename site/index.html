@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f3f0e8">
   <meta name="description" content="A full-stack fintech analytics engineering project exploring customer financial health and behavioural risk signals through a production-style data pipeline.">
-  <title>Fintech Behavioral Analytics — Ashley Esau</title>
+  <title>Fintech Behavioral Analytics | Ashley Esau</title>
   <style>
     :root {
       --paper: #f3f0e8;
@@ -169,12 +169,12 @@
         <div>
           <div class="eyebrow">Analytics engineering · End-to-end data platform</div>
           <h1>Understanding the signals behind <em>financial health.</em></h1>
-          <p class="hero-copy">A full-stack fintech analytics platform built to explore how transaction behaviour can reveal early signs of customer financial stress — from API ingestion to tested, decision-ready data marts.</p>
+          <p class="hero-copy">A full-stack fintech analytics platform built to explore how transaction behaviour can reveal early signs of customer financial stress, from API ingestion to tested, decision-ready data marts.</p>
           <div class="actions">
             <a class="button primary" href="#architecture">Explore the platform <span>↓</span></a>
             <a class="button secondary" href="https://github.com/ashleyesau/fintech-behavioral-analytics" target="_blank" rel="noreferrer">Explore the code ↗</a>
           </div>
-          <p class="hero-note">A practical study in connecting the modern data stack — including the debugging, trade-offs and design decisions that make a pipeline dependable.</p>
+          <p class="hero-note">A practical study in connecting the modern data stack, including the debugging, trade-offs and design decisions that make a pipeline dependable.</p>
         </div>
         <div class="hero-art" aria-label="Abstract concentric data system illustration">
           <div class="orbit">
@@ -209,7 +209,7 @@
           </div>
           <aside class="callout">
             <h3>Designed with data honesty</h3>
-            <p>Plaid Sandbox data is synthetic and does not support real-world predictive conclusions. The project focuses on the correctness of the engineering pipeline and the logic of the analytical models — not on claiming validated customer-risk predictions.</p>
+            <p>Plaid Sandbox data is synthetic and does not support real-world predictive conclusions. The project focuses on the correctness of the engineering pipeline and the logic of the analytical models, not on claiming validated customer-risk predictions.</p>
           </aside>
         </div>
       </div>
@@ -265,10 +265,10 @@
           <div><h2>The important work is in the decisions.</h2><p>The platform documents practical engineering choices made to preserve data integrity, keep the model graph understandable and make orchestration reliable.</p></div>
         </div>
         <div class="engineering-grid">
-          <article class="engineering-card"><span class="index">01 — INGESTION</span><h3>Cursor-based synchronisation</h3><p>Transactions use Plaid's cursor-based sync approach. The cursor advances only after a successful GCS write, so a failed write can be retried from the last known good position.</p></article>
-          <article class="engineering-card"><span class="index">02 — DATA MODELLING</span><h3>A complete monthly spine</h3><p>A generated account-month spine preserves months with zero transactions. This matters when calculating consecutive negative cash-flow periods without treating missing activity as a missing month.</p></article>
-          <article class="engineering-card"><span class="index">03 — QUALITY</span><h3>Staging as the control point</h3><p>Type casting, null handling, field naming and source filters are handled in staging so downstream models inherit consistent, trusted inputs.</p></article>
-          <article class="engineering-card"><span class="index">04 — ORCHESTRATION</span><h3>Quality gates in Airflow</h3><p>Staging tests run before intermediate models. If the quality gate fails, downstream transformation tasks do not proceed on untrusted data.</p></article>
+          <article class="engineering-card"><span class="index">01 - INGESTION</span><h3>Cursor-based synchronisation</h3><p>Transactions use Plaid's cursor-based sync approach. The cursor advances only after a successful GCS write, so a failed write can be retried from the last known good position.</p></article>
+          <article class="engineering-card"><span class="index">02 - DATA MODELLING</span><h3>A complete monthly spine</h3><p>A generated account-month spine preserves months with zero transactions. This matters when calculating consecutive negative cash-flow periods without treating missing activity as a missing month.</p></article>
+          <article class="engineering-card"><span class="index">03 - QUALITY</span><h3>Staging as the control point</h3><p>Type casting, null handling, field naming and source filters are handled in staging so downstream models inherit consistent, trusted inputs.</p></article>
+          <article class="engineering-card"><span class="index">04 - ORCHESTRATION</span><h3>Quality gates in Airflow</h3><p>Staging tests run before intermediate models. If the quality gate fails, downstream transformation tasks do not proceed on untrusted data.</p></article>
         </div>
       </div>
     </section>
@@ -295,7 +295,7 @@
           <div><h2>A complete pipeline, with clear boundaries.</h2><p>The project deliberately prioritised a tested engineering foundation over adding a superficial dashboard layer.</p></div>
         </div>
         <div class="limits-box">
-          <h3>What this project does — and does not — claim.</h3>
+          <h3>What this project does, and does not, claim.</h3>
           <p>The dataset is synthetic Plaid Sandbox data, so the resulting risk signals are not validated predictions about real customers. The platform demonstrates a working ingestion-to-mart workflow and the engineering patterns behind it. A live dashboard, production-grade access controls and centralised cursor persistence are documented as future or out-of-scope work.</p>
         </div>
       </div>
